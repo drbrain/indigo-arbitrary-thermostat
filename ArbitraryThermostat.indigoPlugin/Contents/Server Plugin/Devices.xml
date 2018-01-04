@@ -28,38 +28,6 @@
       </Field>
     </ConfigUI>
     <States>
-      <State id="humidity">
-        <ValueType>Number</ValueType>
-        <TriggerLabel>Humidity</TriggerLabel>
-        <ControlPageLabel>Humidity</ControlPageLabel>
-      </State>
-      <State id="temperature">
-        <ValueType>Number</ValueType>
-        <TriggerLabel>Temperature</TriggerLabel>
-        <ControlPageLabel>Temperature</ControlPageLabel>
-      </State>
-      <State id="coolSetPoint">
-        <ValueType>Number</ValueType>
-        <TriggerLabel>Cool Setpoint</TriggerLabel>
-        <ControlPageLabel>Cool Setpoint</ControlPageLabel>
-      </State>
-      <State id="heatSetPoint">
-        <ValueType>Number</ValueType>
-        <TriggerLabel>Heat Setpoint</TriggerLabel>
-        <ControlPageLabel>Heat Setpoint</ControlPageLabel>
-      </State>
-      <State id="mode">
-        <ValueType>
-          <List>
-            <Option value="off">Off</Option>
-            <Option value="heatOn">Heat On</Option>
-          </List>
-        </ValueType>
-        <TriggerLabel>Operation Mode Changed</TriggerLabel>
-        <TriggerLabelPrefix>Mode Changed to</TriggerLabelPrefix>
-        <ControlPageLabel>Current Mode</ControlPageLabel>
-        <ControlPageLabelPrefix>Mode is</ControlPageLabelPrefix>
-      </State>
     </States>
   </Device>
 </Devices>
