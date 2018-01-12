@@ -1,4 +1,5 @@
 import indigo
+from thermostat import *
 
 class Plugin(indigo.PluginBase):
     def __init__(self, pluginId, pluginDisplayName, pluginVersion, pluginPrefs):
@@ -7,15 +8,9 @@ class Plugin(indigo.PluginBase):
 
         self.debug = pluginPrefs.get('debug', False)
 
-        self.devices = {}
+        self.thermostats = {}
 
-    def deviceStartComm(self, device):
-        if device.id not in self.devices:
-            self.devices[device.id] = device
-
-    def deviceStopComm(self, device):
-        if device.id in self.devices:
-            self.devices.pop(device.id)
+        indigo.devices.subscribeToChanges()
 
     def actionControlThermostat(self, action, device):
         self.debugLog("action %s value %r device %d" % (
@@ -41,3 +36,16 @@ class Plugin(indigo.PluginBase):
 
         device.updateStateOnServer("setpointCool", setpointCool)
         device.updateStateOnServer("setpointHeat", setpointHeat)
+
+    def deviceStartComm(self, device):
+        if device.id not in self.thermostats:
+            self.thermostats[device.id] = Thermostat(self, device)
+
+    def deviceStopComm(self, device):
+        if device.id in self.thermostats:
+            self.thermostats.pop(device.id)
+
+    def deviceUpdated(self, oldDevice, newDevice):
+        for _, thermostat in self.thermostats.iteritems():
+            thermostat.update(oldDevice, newDevice)
+
