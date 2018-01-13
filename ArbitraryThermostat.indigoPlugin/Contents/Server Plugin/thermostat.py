@@ -47,8 +47,9 @@ class Thermostat:
     def setProperties(self):
         pluginProps = self.thermostat.pluginProps
 
-        pluginProps["NumTemperatureInputs"] = 1
-        pluginProps["NumHumidityInputs"]    = 1
+        pluginProps["NumTemperatureInputs"]         = 1
+        pluginProps["NumHumidityInputs"]            = 1
+        pluginProps["ShowCoolHeatEquipmentStateUI"] = 1
 
         self.thermostat.replacePluginPropsOnServer(pluginProps)
 
@@ -97,6 +98,8 @@ class Thermostat:
         self.thermostat.refreshFromServer() # don't rely on subscriptions
 
         if not self.canHeat():
+            self.thermostat.updateStateOnServer("hvacHeaterIsOn", False)
+
             self.debugLog("%s (%d) heat is off" % (
                 self.thermostat.name, self.thermostat.id))
 
@@ -111,6 +114,10 @@ class Thermostat:
 
         if temperature >= heatSetpoint:
             indigo.device.turnOff(self.heatDevice.id)
+
+            self.thermostat.updateStateOnServer("hvacHeaterIsOn", False)
         elif temperature < heatSetpoint:
             indigo.device.turnOn(self.heatDevice.id)
+
+            self.thermostat.updateStateOnServer("hvacHeaterIsOn", True)
 

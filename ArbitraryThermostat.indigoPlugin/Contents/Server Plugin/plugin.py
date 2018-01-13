@@ -49,7 +49,7 @@ class Plugin(indigo.PluginBase):
             device.updateStateOnServer("hvacOperationMode", mode)
             thermostat.updateHeater()
 
-        self.debugLog("%s (%d) mode %s cool %.1f heat %.1f" % (
+        self.debugLog("%s (%d) mode: %s coolSetpoint: %.1f heatSetPoint: %.1f" % (
             device.name, device.id,
             device.hvacMode,
             device.coolSetpoint, device.heatSetpoint))
