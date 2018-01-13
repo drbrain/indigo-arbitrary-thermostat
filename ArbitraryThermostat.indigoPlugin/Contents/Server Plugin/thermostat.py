@@ -17,6 +17,11 @@ class Thermostat:
     def debugLog(self, message):
         self.plugin.debugLog(message)
 
+    def canHeat(self):
+        mode = self.thermostat.hvacMode
+
+        return mode == indigo.kHvacMode.Heat or mode == indigo.kHvacMode.HeatCool
+
     def setDevices(self):
         coolDeviceId        = self.thermostat.ownerProps['coolDevice']
         heatDeviceId        = self.thermostat.ownerProps['heatDevice']
@@ -69,7 +74,7 @@ class Thermostat:
             # need humidity target to add humidifier control
 
         elif self.hygrometerDevice and oldDevice.id == self.hygrometerDevice.id:
-            self.debugLog("hygrometer %d updated to %f" % (
+            self.debugLog("hygrometer %d updated to %.1f" % (
                 oldDevice.id, newDevice.sensorValue))
 
             self.hygrometerDevice = newDevice
@@ -79,7 +84,7 @@ class Thermostat:
             self.thermometerDevice = newDevice
             temperature = newDevice.sensorValue
 
-            self.debugLog("thermometer %d updated to %f" % (
+            self.debugLog("thermometer %d updated to %.1f" % (
                 oldDevice.id, temperature))
 
             self.thermostat.updateStateOnServer("temperatureInput1", temperature)
@@ -91,19 +96,21 @@ class Thermostat:
     def updateHeater(self):
         self.thermostat.refreshFromServer() # don't rely on subscriptions
 
+        if not self.canHeat():
+            self.debugLog("%s (%d) heat is off" % (
+                self.thermostat.name, self.thermostat.id))
+
+            return
+
         temperature  = float(self.thermometerDevice.sensorValue)
         heatSetpoint = self.thermostat.heatSetpoint
 
+        self.debugLog("%s (%d) temp %.1f setpoint %.1f" % (
+            self.thermostat.name, self.thermostat.id,
+            temperature, heatSetpoint))
+
         if temperature >= heatSetpoint:
             indigo.device.turnOff(self.heatDevice.id)
-
-            self.debugLog("heat off %s (%d) %f >= %f" % (
-                self.heatDevice.name, self.heatDevice.id,
-                temperature, heatSetpoint))
         elif temperature < heatSetpoint:
             indigo.device.turnOn(self.heatDevice.id)
-
-            self.debugLog("heat on %s (%d) %f < %f" % (
-                self.heatDevice.name, self.heatDevice.id,
-                temperature, heatSetpoint))
 

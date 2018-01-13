@@ -47,8 +47,9 @@ class Plugin(indigo.PluginBase):
 
         elif indigo.kThermostatAction.SetHvacMode == action:
             device.updateStateOnServer("hvacOperationMode", mode)
+            thermostat.updateHeater()
 
-        self.debugLog("%s (%d) mode %r cool %f heat %f" % (
+        self.debugLog("%s (%d) mode %s cool %.1f heat %.1f" % (
             device.name, device.id,
             device.hvacMode,
             device.coolSetpoint, device.heatSetpoint))
