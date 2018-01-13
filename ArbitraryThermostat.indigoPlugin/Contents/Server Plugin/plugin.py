@@ -62,3 +62,7 @@ class Plugin(indigo.PluginBase):
         if device.id in self.thermostats:
             self.thermostats.pop(device.id)
 
+    def deviceUpdated(self, oldDevice, newDevice):
+        for _, thermostat in self.thermostats.iteritems():
+            thermostat.update(oldDevice, newDevice)
+
