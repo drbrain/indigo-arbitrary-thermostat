@@ -98,6 +98,8 @@ class Thermostat:
         self.thermostat.refreshFromServer() # don't rely on subscriptions
 
         if not self.canHeat():
+            indigo.device.turnOff(self.heatDevice.id)
+
             self.thermostat.updateStateOnServer("hvacHeaterIsOn", False)
 
             self.debugLog("%s (%d) heat is off" % (
