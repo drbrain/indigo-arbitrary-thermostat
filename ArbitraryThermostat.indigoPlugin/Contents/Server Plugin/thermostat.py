@@ -14,6 +14,8 @@ class Thermostat:
         self.setDevices()
         self.setProperties()
 
+        self.updateHeater()
+
     def debugLog(self, message):
         self.plugin.debugLog(message)
 
