@@ -18,6 +18,7 @@ class Plugin(indigo.PluginBase):
             action.actionValue,
             device.id))
 
+        thermostat   = self.thermostats[device.id]
         setpointCool = device.coolSetpoint
         setpointHeat = device.heatSetpoint
 
@@ -25,14 +26,19 @@ class Plugin(indigo.PluginBase):
             setpointCool -= action.actionValue
         elif indigo.kThermostatAction.DecreaseHeatSetpoint == action.thermostatAction:
             setpointHeat -= action.actionValue
+            thermostat.updateHeater()
+
         elif indigo.kThermostatAction.IncreaseCoolSetpoint == action.thermostatAction:
             setpointCool += action.actionValue
         elif indigo.kThermostatAction.IncreaseHeatSetpoint == action.thermostatAction:
             setpointHeat += action.actionValue
+            thermostat.updateHeater()
+
         elif indigo.kThermostatAction.SetCoolSetpoint == action.thermostatAction:
             setpointCool = action.actionValue
         elif indigo.kThermostatAction.SetHeatSetpoint == action.thermostatAction:
             setpointHeat = action.actionValue
+            thermostat.updateHeater()
 
         device.updateStateOnServer("setpointCool", setpointCool)
         device.updateStateOnServer("setpointHeat", setpointHeat)
