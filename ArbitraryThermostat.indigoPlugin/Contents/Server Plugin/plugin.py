@@ -13,35 +13,45 @@ class Plugin(indigo.PluginBase):
         indigo.devices.subscribeToChanges()
 
     def actionControlThermostat(self, action, device):
-        self.debugLog("action %s value %r device %d" % (
-            action.thermostatAction,
-            action.actionValue,
-            device.id))
+        value  = action.actionValue
+        mode   = action.actionMode
+        action = action.thermostatAction
+
+        self.debugLog("%s (%d) action %s value %r mode %r" % (
+            device.name, device.id, action, value, mode))
 
         thermostat   = self.thermostats[device.id]
         setpointCool = device.coolSetpoint
         setpointHeat = device.heatSetpoint
 
-        if indigo.kThermostatAction.DecreaseCoolSetpoint == action.thermostatAction:
-            setpointCool -= action.actionValue
-        elif indigo.kThermostatAction.DecreaseHeatSetpoint == action.thermostatAction:
-            setpointHeat -= action.actionValue
+        if indigo.kThermostatAction.DecreaseCoolSetpoint == action:
+            device.updateStateOnServer("setpointCool", setpointCool - value)
+
+        elif indigo.kThermostatAction.DecreaseHeatSetpoint == action:
+            device.updateStateOnServer("setpointHeat", setpointHeat - value)
             thermostat.updateHeater()
 
-        elif indigo.kThermostatAction.IncreaseCoolSetpoint == action.thermostatAction:
-            setpointCool += action.actionValue
-        elif indigo.kThermostatAction.IncreaseHeatSetpoint == action.thermostatAction:
-            setpointHeat += action.actionValue
+        elif indigo.kThermostatAction.IncreaseCoolSetpoint == action:
+            device.updateStateOnServer("setpointCool", setpointCool + value)
+
+        elif indigo.kThermostatAction.IncreaseHeatSetpoint == action:
+            device.updateStateOnServer("setpointHeat", setpointHeat + value)
             thermostat.updateHeater()
 
-        elif indigo.kThermostatAction.SetCoolSetpoint == action.thermostatAction:
-            setpointCool = action.actionValue
-        elif indigo.kThermostatAction.SetHeatSetpoint == action.thermostatAction:
-            setpointHeat = action.actionValue
+        elif indigo.kThermostatAction.SetCoolSetpoint == action:
+            device.updateStateOnServer("setpointCool", value)
+
+        elif indigo.kThermostatAction.SetHeatSetpoint == action:
+            device.updateStateOnServer("setpointHeat", value)
             thermostat.updateHeater()
 
-        device.updateStateOnServer("setpointCool", setpointCool)
-        device.updateStateOnServer("setpointHeat", setpointHeat)
+        elif indigo.kThermostatAction.SetHvacMode == action:
+            device.updateStateOnServer("hvacOperationMode", mode)
+
+        self.debugLog("%s (%d) mode %r cool %f heat %f" % (
+            device.name, device.id,
+            device.hvacMode,
+            device.coolSetpoint, device.heatSetpoint))
 
     def deviceStartComm(self, device):
         if device.id not in self.thermostats:
